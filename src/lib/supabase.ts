@@ -14,3 +14,15 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true,
   },
 });
+
+export async function testSupabaseConnection() {
+  try {
+    const { data, error } = await supabase.from("pg_tables").select("schemaname").limit(1);
+    if (error) {
+      return { ok: false, error: error.message };
+    }
+    return { ok: true, data };
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : "Unknown error" };
+  }
+}

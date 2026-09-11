@@ -17,11 +17,19 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 export async function testSupabaseConnection() {
   try {
-    const { data, error } = await supabase.from("pg_tables").select("schemaname").limit(1);
-    if (error) {
-      return { ok: false, error: error.message };
+    const anonKey = supabaseAnonKey!;
+    const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${anonKey}`,
+      },
+    });
+
+    if (!response.ok) {
+      return { ok: false, error: `Supabase REST API returned ${response.status}.` };
     }
-    return { ok: true, data };
+
+    return { ok: true, data: await response.json() };
   } catch (error) {
     return { ok: false, error: error instanceof Error ? error.message : "Unknown error" };
   }

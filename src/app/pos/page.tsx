@@ -11,8 +11,14 @@ export default function PosPage() {
   const [paymentMethod, setPaymentMethod] = useState("نقدي");
   const [received, setReceived] = useState(0);
   const [discountPercent, setDiscountPercent] = useState(5);
+  const [search, setSearch] = useState("");
+  const [cart, setCart] = useState(cartSeed);
+  const [notice, setNotice] = useState("");
 
-  const cart = useMemo(() => cartSeed, []);
+  const visibleProducts = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return query ? productCatalog.filter((product) => [product.name, product.sku, product.size].some((value) => value.toLowerCase().includes(query))) : productCatalog;
+  }, [search]);
   const subtotal = cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
   const discountValue = (subtotal * discountPercent) / 100;
   const tax = subtotal * 0.14;
@@ -20,19 +26,46 @@ export default function PosPage() {
   const changeDue = received - total;
   const cashReady = paymentMethod === "نقدي" ? received >= total && selectedSeller : selectedSeller !== "";
 
+  function addToCart(product: (typeof productCatalog)[number]) {
+    setCart((current) => {
+      const existing = current.find((item) => item.id === product.id);
+      if (existing) return current.map((item) => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+      return [...current, { id: product.id, name: product.name, quantity: 1, unitPrice: product.price, discount: 0 }];
+    });
+    setNotice(`تمت إضافة ${product.name} إلى السلة`);
+  }
+
+  function updateQuantity(id: number, amount: number) {
+    setCart((current) => current.flatMap((item) => item.id === id ? (item.quantity + amount > 0 ? [{ ...item, quantity: item.quantity + amount }] : []) : [item]));
+  }
+
+  function clearCart() {
+    setCart([]);
+    setReceived(0);
+    setNotice("تم تفريغ السلة");
+  }
+
+  function completePayment() {
+    setNotice(`تم إتمام الدفع بقيمة ${total.toFixed(2)} ر.س`);
+    setCart([]);
+    setReceived(0);
+  }
+
   return (
     <AppShell title="نقطة البيع" subtitle="واجهة مبيعات سريعة ومهنية">
       <div className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
         <div className="rounded-[28px] border border-[#f0e0c5] bg-white p-5 shadow-[0_12px_32px_rgba(34,26,18,0.04)]">
           <div className="mb-4 flex items-center justify-between gap-3">
             <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
               placeholder="بحث بالاسم، SKU، Barcode"
               className="w-full rounded-2xl border border-[#e9dcc1] bg-[#fffaf4] px-4 py-3 text-right outline-none focus:border-[#F4900E]"
             />
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            {productCatalog.map((product) => (
+            {visibleProducts.map((product) => (
               <div key={product.id} className="rounded-[22px] border border-[#f0e0c5] bg-[#fffaf4] p-3">
                 <div className="mb-3 flex h-24 items-center justify-center rounded-2xl bg-gradient-to-br from-[#f6e7bf] to-[#f8c065] text-3xl">ع</div>
                 <div className="mb-2 flex items-center justify-between">
@@ -44,7 +77,7 @@ export default function PosPage() {
                   <span>{product.price} ر.س</span>
                   <span>{product.stock} في المخزون</span>
                 </div>
-                <button className="mt-3 w-full rounded-2xl bg-[#F4900E] px-3 py-2.5 text-sm font-bold text-white">إضافة للسلة</button>
+                <button type="button" onClick={() => addToCart(product)} className="mt-3 w-full rounded-2xl bg-[#F4900E] px-3 py-2.5 text-sm font-bold text-white">إضافة للسلة</button>
               </div>
             ))}
           </div>
@@ -63,13 +96,13 @@ export default function PosPage() {
                     <div className="font-bold text-[#221A12]">{item.name}</div>
                     <div className="text-xs text-[#7b6652]">{item.unitPrice} ر.س / الوحدة</div>
                   </div>
-                  <button className="text-sm text-[#b13a3a]">حذف</button>
+                  <button type="button" onClick={() => updateQuantity(item.id, -item.quantity)} className="text-sm text-[#b13a3a]">حذف</button>
                 </div>
                 <div className="mt-3 flex items-center justify-between">
                   <div className="flex items-center gap-2 rounded-full bg-[#f8eedb] px-2 py-1">
-                    <button className="h-6 w-6 rounded-full bg-white font-bold">-</button>
+                    <button type="button" onClick={() => updateQuantity(item.id, -1)} className="h-6 w-6 rounded-full bg-white font-bold">-</button>
                     <span className="min-w-5 text-center font-bold">{item.quantity}</span>
-                    <button className="h-6 w-6 rounded-full bg-white font-bold">+</button>
+                    <button type="button" onClick={() => updateQuantity(item.id, 1)} className="h-6 w-6 rounded-full bg-white font-bold">+</button>
                   </div>
                   <div className="font-bold text-[#221A12]">{item.quantity * item.unitPrice} ر.س</div>
                 </div>
@@ -108,7 +141,7 @@ export default function PosPage() {
 
           <div className="space-y-2 rounded-2xl border border-[#f1dfc0] bg-[#fffdfa] p-3 text-sm text-[#4d3827]">
             <div className="flex justify-between"><span>المجموع الفرعي</span><span>{subtotal} ر.س</span></div>
-            <div className="flex justify-between"><span>الخصم (%)</span><span>{discountPercent}%</span></div>
+            <label className="flex items-center justify-between gap-3"><span>الخصم (%)</span><input type="number" min="0" max="100" value={discountPercent} onChange={(event) => setDiscountPercent(Number(event.target.value || 0))} className="w-20 rounded-lg border border-[#e9dcc1] bg-[#fffaf4] px-2 py-1 text-center outline-none focus:border-[#F4900E]" /></label>
             <div className="flex justify-between"><span>الضريبة (14%)</span><span>{tax.toFixed(2)} ر.س</span></div>
             <div className="mt-3 flex justify-between border-t border-[#f2e0c7] pt-3 text-lg font-black text-[#221A12]"><span>الإجمالي</span><span>{total.toFixed(2)} ر.س</span></div>
           </div>
@@ -128,9 +161,13 @@ export default function PosPage() {
             </div>
           )}
 
+          {notice ? <p role="status" className="mt-4 rounded-xl bg-[#edf9f1] px-3 py-2 text-sm font-semibold text-[#1d7b4d]">{notice}</p> : null}
+
           <div className="mt-5 flex gap-3">
-            <button className="flex-1 rounded-2xl border border-[#e7d7b8] bg-[#fff8ee] px-4 py-3 font-bold text-[#4d3827]">تفريغ</button>
+            <button type="button" onClick={clearCart} className="flex-1 rounded-2xl border border-[#e7d7b8] bg-[#fff8ee] px-4 py-3 font-bold text-[#4d3827]">تفريغ</button>
             <button
+              type="button"
+              onClick={completePayment}
               disabled={!cashReady}
               className={`flex-1 rounded-2xl px-4 py-3 font-bold text-white ${cashReady ? "bg-[#F4900E]" : "cursor-not-allowed bg-[#d9cab0]"}`}
             >

@@ -71,7 +71,7 @@ export default function DashboardPage() {
         <div className="rounded-[28px] border border-[#f0e0c5] bg-white p-5 shadow-[0_10px_25px_rgba(34,26,18,0.04)]">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl font-black text-[#221A12]">أفضل المنتجات</h2>
-            <button className="rounded-full bg-[#fff4df] px-3 py-1.5 text-sm font-medium text-[#7d4e00]">الأكثر مبيعًا</button>
+            <span className="rounded-full bg-[#fff4df] px-3 py-1.5 text-sm font-medium text-[#7d4e00]">الأكثر مبيعًا</span>
           </div>
 
           <div className="space-y-3">

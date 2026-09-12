@@ -52,7 +52,7 @@ export function AppShell({ children, title, subtitle }: { children: React.ReactN
                 <h1 className="mt-1 text-2xl font-black text-[#221A12]">{title}</h1>
               </div>
               <div className="flex items-center gap-3">
-                <button className="rounded-full border border-[#e7d7b8] bg-[#fff6eb] px-4 py-2 text-sm font-medium text-[#4d3a2a]">تصفية</button>
+                <Link href="/reports" className="rounded-full border border-[#e7d7b8] bg-[#fff6eb] px-4 py-2 text-sm font-medium text-[#4d3a2a]">التقارير</Link>
                 <div className="flex items-center gap-3 rounded-full border border-[#ead9bc] bg-[#fff9f3] px-3 py-2">
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F4900E] text-sm font-bold text-white">م</div>
                   <div className="text-left text-sm">

@@ -23,7 +23,7 @@ export async function testSupabaseConnection() {
 
   try {
     const anonKey = supabaseAnonKey;
-    const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+    const response = await fetch(`${supabaseUrl}/auth/v1/settings`, {
       headers: {
         apikey: anonKey,
         Authorization: `Bearer ${anonKey}`,

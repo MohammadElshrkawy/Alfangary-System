@@ -111,7 +111,7 @@ export default function ProductsPage() {
                     <td className="px-4 py-4 font-bold">{product.name}<div className="text-xs font-normal text-[#806c59]">{product.size}</div></td>
                     <td className="px-4 py-4">{product.sku}</td>
                     <td className="px-4 py-4">{product.grade}</td>
-                    <td className="px-4 py-4">{product.price.toLocaleString()} ر.س</td>
+                    <td className="px-4 py-4">{product.price.toLocaleString()} ج.م</td>
                     <td className="px-4 py-4">{product.stock}</td>
                     <td className="px-4 py-4"><div className="flex gap-2"><button type="button" onClick={() => startEdit(product)} className="rounded-xl bg-[#fff4df] px-3 py-2 font-semibold text-[#8a5700]">تعديل</button><button type="button" onClick={() => deleteProduct(product.id)} className="rounded-xl bg-[#fde8e8] px-3 py-2 font-semibold text-[#b13a3a]">حذف</button></div></td>
                   </tr>

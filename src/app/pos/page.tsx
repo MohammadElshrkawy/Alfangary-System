@@ -46,7 +46,7 @@ export default function PosPage() {
   }
 
   function completePayment() {
-    setNotice(`تم إتمام الدفع بقيمة ${total.toFixed(2)} ر.س`);
+    setNotice(`تم إتمام الدفع بقيمة ${total.toFixed(2)} ج.م`);
     setCart([]);
     setReceived(0);
   }
@@ -74,7 +74,7 @@ export default function PosPage() {
                 </div>
                 <div className="text-lg font-black text-[#221A12]">{product.name}</div>
                 <div className="mt-2 flex items-center justify-between text-sm text-[#4d3827]">
-                  <span>{product.price} ر.س</span>
+                  <span>{product.price} ج.م</span>
                   <span>{product.stock} في المخزون</span>
                 </div>
                 <button type="button" onClick={() => addToCart(product)} className="mt-3 w-full rounded-2xl bg-[#F4900E] px-3 py-2.5 text-sm font-bold text-white">إضافة للسلة</button>
@@ -94,7 +94,7 @@ export default function PosPage() {
                 <div className="flex items-center justify-between gap-2">
                   <div>
                     <div className="font-bold text-[#221A12]">{item.name}</div>
-                    <div className="text-xs text-[#7b6652]">{item.unitPrice} ر.س / الوحدة</div>
+                    <div className="text-xs text-[#7b6652]">{item.unitPrice} ج.م / الوحدة</div>
                   </div>
                   <button type="button" onClick={() => updateQuantity(item.id, -item.quantity)} className="text-sm text-[#b13a3a]">حذف</button>
                 </div>
@@ -104,7 +104,7 @@ export default function PosPage() {
                     <span className="min-w-5 text-center font-bold">{item.quantity}</span>
                     <button type="button" onClick={() => updateQuantity(item.id, 1)} className="h-6 w-6 rounded-full bg-white font-bold">+</button>
                   </div>
-                  <div className="font-bold text-[#221A12]">{item.quantity * item.unitPrice} ر.س</div>
+                  <div className="font-bold text-[#221A12]">{item.quantity * item.unitPrice} ج.م</div>
                 </div>
               </div>
             ))}
@@ -140,10 +140,10 @@ export default function PosPage() {
           </div>
 
           <div className="space-y-2 rounded-2xl border border-[#f1dfc0] bg-[#fffdfa] p-3 text-sm text-[#4d3827]">
-            <div className="flex justify-between"><span>المجموع الفرعي</span><span>{subtotal} ر.س</span></div>
+            <div className="flex justify-between"><span>المجموع الفرعي</span><span>{subtotal} ج.م</span></div>
             <label className="flex items-center justify-between gap-3"><span>الخصم (%)</span><input type="number" min="0" max="100" value={discountPercent} onChange={(event) => setDiscountPercent(Number(event.target.value || 0))} className="w-20 rounded-lg border border-[#e9dcc1] bg-[#fffaf4] px-2 py-1 text-center outline-none focus:border-[#F4900E]" /></label>
-            <div className="flex justify-between"><span>الضريبة (14%)</span><span>{tax.toFixed(2)} ر.س</span></div>
-            <div className="mt-3 flex justify-between border-t border-[#f2e0c7] pt-3 text-lg font-black text-[#221A12]"><span>الإجمالي</span><span>{total.toFixed(2)} ر.س</span></div>
+            <div className="flex justify-between"><span>الضريبة (14%)</span><span>{tax.toFixed(2)} ج.م</span></div>
+            <div className="mt-3 flex justify-between border-t border-[#f2e0c7] pt-3 text-lg font-black text-[#221A12]"><span>الإجمالي</span><span>{total.toFixed(2)} ج.م</span></div>
           </div>
 
           {paymentMethod === "نقدي" && (
@@ -156,7 +156,7 @@ export default function PosPage() {
                 className="w-full rounded-xl border border-[#e9dcc1] bg-[#fffaf4] px-3 py-2.5 text-base outline-none focus:border-[#F4900E]"
               />
               <div className={`mt-3 text-sm font-bold ${changeDue >= 0 ? "text-[#16814a]" : "text-[#b13a3a]"}`}>
-                الباقي للعميل: {changeDue >= 0 ? `${changeDue.toFixed(2)} ر.س` : `- ${Math.abs(changeDue).toFixed(2)} ر.س`}
+                الباقي للعميل: {changeDue >= 0 ? `${changeDue.toFixed(2)} ج.م` : `- ${Math.abs(changeDue).toFixed(2)} ج.م`}
               </div>
             </div>
           )}

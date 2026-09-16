@@ -83,8 +83,8 @@ export default function DashboardPage() {
                   <div className="text-sm text-[#70604d]">{item.size}</div>
                 </div>
                 <div className="text-sm text-[#70604d]">{item.sold} قطعة</div>
-                <div className="text-sm font-semibold text-[#221A12]">{item.revenue.toLocaleString()} ر.س</div>
-                <div className="text-sm font-semibold text-[#1d7b4d]">{item.profit.toLocaleString()} ر.س</div>
+                <div className="text-sm font-semibold text-[#221A12]">{item.revenue.toLocaleString()} ج.م</div>
+                <div className="text-sm font-semibold text-[#1d7b4d]">{item.profit.toLocaleString()} ج.م</div>
               </div>
             ))}
           </div>
@@ -95,11 +95,11 @@ export default function DashboardPage() {
           <div className="space-y-4">
             <div className="rounded-2xl bg-white p-4">
               <div className="text-sm text-[#6a5643]">المشتريات</div>
-              <div className="mt-2 text-3xl font-black text-[#221A12]">₩ 68,420</div>
+              <div className="mt-2 text-3xl font-black text-[#221A12]">68,420 ج.م</div>
             </div>
             <div className="rounded-2xl bg-white p-4">
               <div className="text-sm text-[#6a5643]">المبالغ المتوقعة</div>
-              <div className="mt-2 text-3xl font-black text-[#221A12]">₩ 92,180</div>
+              <div className="mt-2 text-3xl font-black text-[#221A12]">92,180 ج.م</div>
             </div>
             <div className="rounded-2xl bg-white p-4">
               <div className="text-sm text-[#6a5643]">التدقيق</div>

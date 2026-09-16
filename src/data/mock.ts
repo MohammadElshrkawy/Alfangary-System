@@ -1,12 +1,12 @@
 export const revenueStats = [
-  { label: "إجمالي المبيعات", value: "₩ 186,250", delta: "+12.4%", tone: "positive" },
-  { label: "إجمالي الأرباح", value: "₩ 64,850", delta: "+8.1%", tone: "positive" },
-  { label: "صافي الربح", value: "₩ 45,200", delta: "+5.9%", tone: "positive" },
+  { label: "إجمالي المبيعات", value: "186,250 ج.م", delta: "+12.4%", tone: "positive" },
+  { label: "إجمالي الأرباح", value: "64,850 ج.م", delta: "+8.1%", tone: "positive" },
+  { label: "صافي الربح", value: "45,200 ج.م", delta: "+5.9%", tone: "positive" },
   { label: "عدد الطلبات", value: "328", delta: "+18", tone: "positive" },
   { label: "العملاء", value: "1,240", delta: "+29", tone: "positive" },
   { label: "المنتجات", value: "86", delta: "+6", tone: "positive" },
   { label: "منخفض المخزون", value: "12", delta: "-3", tone: "warning" },
-  { label: "العجز", value: "₩ 2,410", delta: "-1.3%", tone: "danger" },
+  { label: "العجز", value: "2,410 ج.م", delta: "-1.3%", tone: "danger" },
 ];
 
 export const bestSellers = [

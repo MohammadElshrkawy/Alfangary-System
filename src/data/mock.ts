@@ -26,10 +26,10 @@ export const paymentBreakdown = [
 ];
 
 export const productCatalog = [
-  { id: 1, name: "عسل المرق", arabic: "عسل المرق", sku: "AL-250", price: 320, stock: 18, grade: "عضوي", size: "250g" },
-  { id: 2, name: "عسل السدر", arabic: "عسل السدر", sku: "AL-330", price: 440, stock: 12, grade: "تغذية بسيطة", size: "330g" },
-  { id: 3, name: "عسل الربيع", arabic: "عسل الربيع", sku: "AL-500", price: 590, stock: 7, grade: "عضوي", size: "500g" },
-  { id: 4, name: "مزيج النخيل", arabic: "مزيج النخيل", sku: "AL-750", price: 780, stock: 4, grade: "تغذية بسيطة", size: "750g" },
+  { id: 1, name: "عسل المرق", arabic: "عسل المرق", sku: "AL-250", price: 320, stock: 18, profitPercent: 0, grade: "عضوي", size: "250g" },
+  { id: 2, name: "عسل السدر", arabic: "عسل السدر", sku: "AL-330", price: 440, stock: 12, profitPercent: 0, grade: "تغذية بسيطة", size: "330g" },
+  { id: 3, name: "عسل الربيع", arabic: "عسل الربيع", sku: "AL-500", price: 590, stock: 7, profitPercent: 0, grade: "عضوي", size: "500g" },
+  { id: 4, name: "مزيج النخيل", arabic: "مزيج النخيل", sku: "AL-750", price: 780, stock: 4, profitPercent: 0, grade: "تغذية بسيطة", size: "750g" },
 ];
 
 export const cartSeed = [

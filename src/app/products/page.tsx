@@ -12,9 +12,10 @@ type ProductForm = {
   size: string;
   price: string;
   stock: string;
+  profitPercent: string;
 };
 
-const emptyForm: ProductForm = { name: "", sku: "", grade: "", size: "", price: "", stock: "" };
+const emptyForm: ProductForm = { name: "", sku: "", grade: "", size: "", price: "", stock: "", profitPercent: "0" };
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>(productCatalog);
@@ -46,7 +47,7 @@ export default function ProductsPage() {
 
   function startEdit(product: Product) {
     setEditingId(product.id);
-    setForm({ name: product.name, sku: product.sku, grade: product.grade, size: product.size, price: String(product.price), stock: String(product.stock) });
+    setForm({ name: product.name, sku: product.sku, grade: product.grade, size: product.size, price: String(product.price), stock: String(product.stock), profitPercent: String(product.profitPercent ?? 0) });
   }
 
   function resetForm() {
@@ -56,8 +57,8 @@ export default function ProductsPage() {
 
   function submitForm(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const product = { name: form.name.trim(), sku: form.sku.trim(), grade: form.grade.trim(), size: form.size.trim(), price: Number(form.price), stock: Number(form.stock) };
-    if (!product.name || !product.sku || !product.grade || !product.size || !Number.isFinite(product.price) || !Number.isFinite(product.stock)) return;
+    const product = { name: form.name.trim(), sku: form.sku.trim(), grade: form.grade.trim(), size: form.size.trim(), price: Number(form.price), stock: Number(form.stock), profitPercent: Number(form.profitPercent) };
+    if (!product.name || !product.sku || !product.grade || !product.size || !Number.isFinite(product.price) || !Number.isFinite(product.stock) || !Number.isFinite(product.profitPercent) || product.profitPercent < 0 || product.profitPercent > 100) return;
 
     if (editingId !== null) {
       setProducts((current) => current.map((item) => item.id === editingId ? { ...item, ...product, arabic: product.name } : item));
@@ -86,13 +87,14 @@ export default function ProductsPage() {
             {editingId !== null ? <button type="button" onClick={resetForm} className="text-sm font-semibold text-[#a45f00]">إلغاء التعديل</button> : null}
           </div>
           <form onSubmit={submitForm} className="space-y-3">
-            {([["name", "اسم المنتج"], ["sku", "SKU"], ["grade", "التصنيف"], ["size", "الحجم"], ["price", "السعر"], ["stock", "المخزون"]] as const).map(([field, label]) => (
+            {([["name", "اسم المنتج"], ["sku", "SKU"], ["grade", "التصنيف"], ["size", "الحجم"], ["price", "سعر البيع"], ["stock", "المخزون"], ["profitPercent", "نسبة الربح (%)"]] as const).map(([field, label]) => (
               <label key={field} className="block text-sm font-semibold text-[#4d3827]">
                 {label}
                 <input
                   required
                   type={field === "price" || field === "stock" ? "number" : "text"}
-                  min={field === "price" || field === "stock" ? "0" : undefined}
+                  min={field === "price" || field === "stock" || field === "profitPercent" ? "0" : undefined}
+                  max={field === "profitPercent" ? "100" : undefined}
                   value={form[field]}
                   onChange={(event) => updateField(field, event.target.value)}
                   className="mt-1 w-full rounded-xl border border-[#e8d9b9] bg-[#fffaf4] px-3 py-2.5 font-normal outline-none focus:border-[#F4900E]"
@@ -115,7 +117,7 @@ export default function ProductsPage() {
           </div>
           <div className="overflow-x-auto rounded-2xl border border-[#f0e1c9]">
             <table className="w-full min-w-[720px] text-right text-sm">
-              <thead className="bg-[#fffaf4] text-[#6a5643]"><tr>{["المنتج", "SKU", "التصنيف", "السعر", "المخزون", "الإجراءات"].map((heading) => <th key={heading} className="px-4 py-3 font-semibold">{heading}</th>)}</tr></thead>
+              <thead className="bg-[#fffaf4] text-[#6a5643]"><tr>{["المنتج", "SKU", "التصنيف", "سعر البيع", "نسبة الربح", "المخزون", "الإجراءات"].map((heading) => <th key={heading} className="px-4 py-3 font-semibold">{heading}</th>)}</tr></thead>
               <tbody>
                 {filteredProducts.map((product) => (
                   <tr key={product.id} className="border-t border-[#f3e8d8] text-[#3f2d20]">
@@ -123,11 +125,12 @@ export default function ProductsPage() {
                     <td className="px-4 py-4">{product.sku}</td>
                     <td className="px-4 py-4">{product.grade}</td>
                     <td className="px-4 py-4">{product.price.toLocaleString()} ج.م</td>
+                    <td className="px-4 py-4">{product.profitPercent ?? 0}%</td>
                     <td className="px-4 py-4">{product.stock}</td>
                     <td className="px-4 py-4"><div className="flex gap-2"><button type="button" onClick={() => startEdit(product)} className="rounded-xl bg-[#fff4df] px-3 py-2 font-semibold text-[#8a5700]">تعديل</button><button type="button" onClick={() => deleteProduct(product.id)} className="rounded-xl bg-[#fde8e8] px-3 py-2 font-semibold text-[#b13a3a]">حذف</button></div></td>
                   </tr>
                 ))}
-                {filteredProducts.length === 0 ? <tr><td colSpan={6} className="px-4 py-12 text-center text-[#806c59]">لا توجد منتجات مطابقة</td></tr> : null}
+                {filteredProducts.length === 0 ? <tr><td colSpan={7} className="px-4 py-12 text-center text-[#806c59]">لا توجد منتجات مطابقة</td></tr> : null}
               </tbody>
             </table>
           </div>

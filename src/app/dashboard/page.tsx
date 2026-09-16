@@ -1,5 +1,9 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
 import { AppShell } from "@/components/app-shell";
-import { revenueStats, bestSellers, paymentBreakdown } from "@/data/mock";
+import { revenueStats, paymentBreakdown } from "@/data/mock";
 
 function StatCard({ label, value, delta, tone }: { label: string; value: string; delta: string; tone: "positive" | "warning" | "danger" }) {
   const toneMap = {
@@ -20,11 +24,31 @@ function StatCard({ label, value, delta, tone }: { label: string; value: string;
 }
 
 export default function DashboardPage() {
+  const [period, setPeriod] = useState("يومي");
+  const [notice, setNotice] = useState("");
+  const zeroBars = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+  function resetDashboard() {
+    setPeriod("يومي");
+    setNotice("تم تصفير مؤشرات لوحة التحكم");
+  }
+
   return (
-    <AppShell title="لوحة التحكم" subtitle="مؤشرات الأداء الرئيسية خلال آخر 30 يومًا">
+    <AppShell title="لوحة التحكم" subtitle={`مؤشرات الأداء الرئيسية - ${period}`}>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-[#f0e0c5] bg-white p-4 shadow-[0_10px_25px_rgba(34,26,18,0.04)]">
+        <div>
+          <h2 className="font-black text-[#221A12]">إجراءات سريعة</h2>
+          {notice ? <p role="status" className="mt-1 text-sm font-semibold text-[#1d7b4d]">{notice}</p> : <p className="mt-1 text-sm text-[#806c59]">ابدأ بإضافة بيانات جديدة للنظام</p>}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {[['/pos', 'طلب بيع جديد'], ['/products', 'إضافة منتج'], ['/customers', 'إضافة عميل'], ['/inventory', 'حركة مخزون'], ['/reports', 'فتح التقارير']].map(([href, label]) => <Link key={href} href={href} className="rounded-xl bg-[#F4900E] px-4 py-2.5 text-sm font-bold text-white">{label}</Link>)}
+          <button type="button" onClick={resetDashboard} className="rounded-xl border border-[#e7d7b8] bg-[#fff8ee] px-4 py-2.5 text-sm font-bold text-[#4d3827]">تصفير اللوحة</button>
+        </div>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {revenueStats.slice(0, 8).map((item) => (
-          <StatCard key={item.label} label={item.label} value={item.value} delta={item.delta} tone={item.tone as "positive" | "warning" | "danger"} />
+          <StatCard key={item.label} label={item.label} value="0" delta="0%" tone={item.tone as "positive" | "warning" | "danger"} />
         ))}
       </div>
 
@@ -33,14 +57,12 @@ export default function DashboardPage() {
           <div className="mb-5 flex items-center justify-between">
             <h2 className="text-xl font-black text-[#221A12]">المبيعات عبر الزمن</h2>
             <div className="flex gap-2 text-sm text-[#7d664f]">
-              <span className="rounded-full bg-[#f5ead9] px-2 py-1">يومي</span>
-              <span>أسبوعي</span>
-              <span>شهري</span>
+              {["يومي", "أسبوعي", "شهري"].map((option) => <button key={option} type="button" onClick={() => { setPeriod(option); setNotice(`تم اختيار الفترة: ${option}`); }} className={`rounded-full px-2 py-1 ${period === option ? "bg-[#f5ead9] font-bold" : ""}`}>{option}</button>)}
             </div>
           </div>
 
           <div className="flex h-64 items-end gap-3 px-2">
-            {[42, 58, 44, 62, 75, 81, 67, 90, 72, 84, 96, 78].map((height, index) => (
+            {zeroBars.map((height, index) => (
               <div key={index} className="flex flex-1 flex-col items-center gap-2">
                 <div className="w-full rounded-t-2xl bg-gradient-to-t from-[#F4900E] via-[#ffb24d] to-[#f7d9a8]" style={{ height: `${height}%` }} />
                 <span className="text-xs text-[#7d664f]">{index + 1}</span>
@@ -56,10 +78,10 @@ export default function DashboardPage() {
               <div key={item.method}>
                 <div className="mb-1 flex items-center justify-between text-sm text-[#4d3827]">
                   <span>{item.method}</span>
-                  <span>{item.percent}%</span>
+                  <span>0%</span>
                 </div>
                 <div className="h-2.5 overflow-hidden rounded-full bg-[#f6eedf]">
-                  <div className="h-full rounded-full bg-gradient-to-r from-[#F4900E] to-[#c47dff]" style={{ width: `${item.percent}%` }} />
+                  <div className="h-full rounded-full bg-gradient-to-r from-[#F4900E] to-[#c47dff]" style={{ width: "0%" }} />
                 </div>
               </div>
             ))}
@@ -71,22 +93,11 @@ export default function DashboardPage() {
         <div className="rounded-[28px] border border-[#f0e0c5] bg-white p-5 shadow-[0_10px_25px_rgba(34,26,18,0.04)]">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl font-black text-[#221A12]">أفضل المنتجات</h2>
-            <span className="rounded-full bg-[#fff4df] px-3 py-1.5 text-sm font-medium text-[#7d4e00]">الأكثر مبيعًا</span>
+            <Link href="/products" className="rounded-full bg-[#fff4df] px-3 py-1.5 text-sm font-medium text-[#7d4e00]">إدارة المنتجات</Link>
           </div>
 
-          <div className="space-y-3">
-            {bestSellers.map((item) => (
-              <div key={item.name} className="grid grid-cols-[auto_1fr_auto_auto_auto] items-center gap-4 rounded-2xl border border-[#f0e1c9] bg-[#fffaf4] p-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F4900E]/15 text-lg font-black text-[#F4900E]">ع</div>
-                <div>
-                  <div className="font-bold text-[#221A12]">{item.name}</div>
-                  <div className="text-sm text-[#70604d]">{item.size}</div>
-                </div>
-                <div className="text-sm text-[#70604d]">{item.sold} قطعة</div>
-                <div className="text-sm font-semibold text-[#221A12]">{item.revenue.toLocaleString()} ج.م</div>
-                <div className="text-sm font-semibold text-[#1d7b4d]">{item.profit.toLocaleString()} ج.م</div>
-              </div>
-            ))}
+          <div className="rounded-2xl border border-dashed border-[#e7d7b8] bg-[#fffaf4] p-8 text-center text-[#806c59]">
+            لا توجد مبيعات بعد. ابدأ من <Link href="/pos" className="font-bold text-[#F4900E]">طلب بيع جديد</Link>.
           </div>
         </div>
 
@@ -95,11 +106,11 @@ export default function DashboardPage() {
           <div className="space-y-4">
             <div className="rounded-2xl bg-white p-4">
               <div className="text-sm text-[#6a5643]">المشتريات</div>
-              <div className="mt-2 text-3xl font-black text-[#221A12]">68,420 ج.م</div>
+              <div className="mt-2 text-3xl font-black text-[#221A12]">0 ج.م</div>
             </div>
             <div className="rounded-2xl bg-white p-4">
               <div className="text-sm text-[#6a5643]">المبالغ المتوقعة</div>
-              <div className="mt-2 text-3xl font-black text-[#221A12]">92,180 ج.م</div>
+              <div className="mt-2 text-3xl font-black text-[#221A12]">0 ج.م</div>
             </div>
             <div className="rounded-2xl bg-white p-4">
               <div className="text-sm text-[#6a5643]">التدقيق</div>

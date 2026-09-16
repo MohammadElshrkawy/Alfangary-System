@@ -2,8 +2,9 @@
 
 import { startTransition, useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/app-shell";
-import { cartSeed, productCatalog, sellers } from "@/data/mock";
+import { cartSeed, productCatalog } from "@/data/mock";
 import { loadProducts, Product } from "@/lib/products";
+import { loadSellers, Seller } from "@/lib/sellers";
 
 const PaymentMethods = ["نقدي", "Vodafone Cash", "Visa", "Mastercard", "InstaPay", "تحويل بنكي", "أخرى"];
 
@@ -14,11 +15,15 @@ export default function PosPage() {
   const [discountPercent, setDiscountPercent] = useState(5);
   const [search, setSearch] = useState("");
   const [products, setProducts] = useState<Product[]>(productCatalog);
+  const [sellers, setSellers] = useState<Seller[]>([]);
   const [cart, setCart] = useState(cartSeed);
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
-    startTransition(() => setProducts(loadProducts()));
+    startTransition(() => {
+      setProducts(loadProducts());
+      setSellers(loadSellers());
+    });
   }, []);
 
   const visibleProducts = useMemo(() => {

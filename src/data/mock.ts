@@ -38,9 +38,9 @@ export const cartSeed = [
 ];
 
 export const sellers = [
-  { id: 1, name: "أحمد سعد", sales: 186250, commissions: 12400 },
-  { id: 2, name: "سارة علي", sales: 124800, commissions: 9600 },
-  { id: 3, name: "خالد فهد", sales: 98000, commissions: 7800 },
+  { id: 1, name: "أحمد سعد", phone: "01000000001", sales: 186250, commissions: 12400 },
+  { id: 2, name: "سارة علي", phone: "01000000002", sales: 124800, commissions: 9600 },
+  { id: 3, name: "خالد فهد", phone: "01000000003", sales: 98000, commissions: 7800 },
 ];
 
 export const customers = [

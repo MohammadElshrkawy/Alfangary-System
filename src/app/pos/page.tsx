@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { startTransition, useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { cartSeed, productCatalog, sellers } from "@/data/mock";
+import { loadProducts, Product } from "@/lib/products";
 
 const PaymentMethods = ["نقدي", "Vodafone Cash", "Visa", "Mastercard", "InstaPay", "تحويل بنكي", "أخرى"];
 
@@ -12,13 +13,18 @@ export default function PosPage() {
   const [received, setReceived] = useState(0);
   const [discountPercent, setDiscountPercent] = useState(5);
   const [search, setSearch] = useState("");
+  const [products, setProducts] = useState<Product[]>(productCatalog);
   const [cart, setCart] = useState(cartSeed);
   const [notice, setNotice] = useState("");
 
+  useEffect(() => {
+    startTransition(() => setProducts(loadProducts()));
+  }, []);
+
   const visibleProducts = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return query ? productCatalog.filter((product) => [product.name, product.sku, product.size].some((value) => value.toLowerCase().includes(query))) : productCatalog;
-  }, [search]);
+    return query ? products.filter((product) => [product.name, product.sku, product.size].some((value) => value.toLowerCase().includes(query))) : products;
+  }, [products, search]);
   const subtotal = cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
   const discountValue = (subtotal * discountPercent) / 100;
   const tax = subtotal * 0.14;
@@ -26,7 +32,7 @@ export default function PosPage() {
   const changeDue = received - total;
   const cashReady = paymentMethod === "نقدي" ? received >= total && selectedSeller : selectedSeller !== "";
 
-  function addToCart(product: (typeof productCatalog)[number]) {
+  function addToCart(product: Product) {
     setCart((current) => {
       const existing = current.find((item) => item.id === product.id);
       if (existing) return current.map((item) => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);

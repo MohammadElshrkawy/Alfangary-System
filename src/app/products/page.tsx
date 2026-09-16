@@ -1,10 +1,9 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, startTransition, useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/app-shell";
+import { loadProducts, Product, saveProducts } from "@/lib/products";
 import { productCatalog } from "@/data/mock";
-
-type Product = (typeof productCatalog)[number];
 
 type ProductForm = {
   name: string;
@@ -19,9 +18,21 @@ const emptyForm: ProductForm = { name: "", sku: "", grade: "", size: "", price: 
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>(productCatalog);
+  const [hydrated, setHydrated] = useState(false);
   const [form, setForm] = useState<ProductForm>(emptyForm);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    startTransition(() => {
+      setProducts(loadProducts());
+      setHydrated(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (hydrated) saveProducts(products);
+  }, [hydrated, products]);
 
   const filteredProducts = useMemo(() => {
     const query = search.trim().toLowerCase();

@@ -8,7 +8,7 @@ const navItems = [
   { href: "/inventory", label: "المخزون" },
   { href: "/orders", label: "الطلبات" },
   { href: "/customers", label: "العملاء" },
-  { href: "/vendors", label: "الموردون" },
+  { href: "/vendors", label: "البائعون" },
   { href: "/bazaars", label: "البازارات" },
   { href: "/incoming-orders", label: "الطلبات الواردة" },
   { href: "/gifts", label: "الهدايا" },

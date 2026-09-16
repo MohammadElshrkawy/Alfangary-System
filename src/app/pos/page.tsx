@@ -5,6 +5,7 @@ import { AppShell } from "@/components/app-shell";
 import { cartSeed, productCatalog } from "@/data/mock";
 import { loadProducts, Product } from "@/lib/products";
 import { loadSellers, Seller } from "@/lib/sellers";
+import { addOrUpdateCustomer } from "@/lib/customers";
 
 const PaymentMethods = ["نقدي", "Vodafone Cash", "Visa", "Mastercard", "InstaPay", "تحويل بنكي", "أخرى"];
 
@@ -18,6 +19,8 @@ export default function PosPage() {
   const [sellers, setSellers] = useState<Seller[]>([]);
   const [cart, setCart] = useState(cartSeed);
   const [notice, setNotice] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
 
   useEffect(() => {
     startTransition(() => {
@@ -57,9 +60,16 @@ export default function PosPage() {
   }
 
   function completePayment() {
+    if (!customerName.trim() || !customerPhone.trim()) {
+      setNotice("أدخل اسم العميل ورقم الموبايل أولًا");
+      return;
+    }
+    addOrUpdateCustomer(customerName.trim(), customerPhone.trim());
     setNotice(`تم إتمام الدفع بقيمة ${total.toFixed(2)} ج.م`);
     setCart([]);
     setReceived(0);
+    setCustomerName("");
+    setCustomerPhone("");
   }
 
   return (
@@ -147,6 +157,14 @@ export default function PosPage() {
                   {method}
                 </button>
               ))}
+            </div>
+          </div>
+
+          <div className="mb-4 rounded-2xl border border-[#f1dfc0] bg-white p-3">
+            <h3 className="mb-3 font-bold text-[#221A12]">بيانات العميل</h3>
+            <div className="grid gap-3 md:grid-cols-2">
+              <input required value={customerName} onChange={(event) => setCustomerName(event.target.value)} placeholder="اسم العميل" aria-label="اسم العميل" className="rounded-xl border border-[#e9dcc1] bg-[#fffaf4] px-3 py-2.5 outline-none focus:border-[#F4900E]" />
+              <input required type="tel" value={customerPhone} onChange={(event) => setCustomerPhone(event.target.value)} placeholder="رقم الموبايل" aria-label="رقم الموبايل" className="rounded-xl border border-[#e9dcc1] bg-[#fffaf4] px-3 py-2.5 text-left outline-none focus:border-[#F4900E]" />
             </div>
           </div>
 

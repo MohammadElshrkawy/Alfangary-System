@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { startTransition, useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/app-shell";
-import { revenueStats, paymentBreakdown } from "@/data/mock";
+import { revenueStats } from "@/data/mock";
+import { loadOrders, Order } from "@/lib/orders";
 
 function StatCard({ label, value, delta, tone }: { label: string; value: string; delta: string; tone: "positive" | "warning" | "danger" }) {
   const toneMap = {
@@ -26,7 +27,43 @@ function StatCard({ label, value, delta, tone }: { label: string; value: string;
 export default function DashboardPage() {
   const [period, setPeriod] = useState("يومي");
   const [notice, setNotice] = useState("");
-  const zeroBars = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    startTransition(() => setOrders(loadOrders()));
+  }, []);
+
+  const metrics = useMemo(() => {
+    const totalSales = orders.reduce((sum, order) => sum + order.total, 0);
+    const totalDiscount = orders.reduce((sum, order) => sum + (order.subtotal * order.discountPercent) / 100, 0);
+    const customers = new Set(orders.map((order) => order.customerPhone)).size;
+    const products = new Map<string, { quantity: number; revenue: number }>();
+    const payments = new Map<string, number>();
+    orders.forEach((order) => {
+      payments.set(order.paymentMethod, (payments.get(order.paymentMethod) ?? 0) + order.total);
+      order.items.forEach((item) => {
+        const current = products.get(item.name) ?? { quantity: 0, revenue: 0 };
+        products.set(item.name, { quantity: current.quantity + item.quantity, revenue: current.revenue + item.quantity * item.unitPrice });
+      });
+    });
+    const bestProducts = [...products.entries()].sort((a, b) => b[1].quantity - a[1].quantity).slice(0, 4);
+    const paymentTotal = [...payments.values()].reduce((sum, value) => sum + value, 0);
+    return { totalSales, totalDiscount, customers, bestProducts, payments: [...payments.entries()], paymentTotal };
+  }, [orders]);
+
+  const statValues = [
+    `${metrics.totalSales.toLocaleString()} ج.م`,
+    `${metrics.totalSales.toLocaleString()} ج.م`,
+    `${Math.max(metrics.totalSales - metrics.totalDiscount, 0).toLocaleString()} ج.م`,
+    String(orders.length),
+    String(metrics.customers),
+    String(metrics.bestProducts.length),
+    "0",
+    "0 ج.م",
+  ];
+
+  const paymentBreakdown = metrics.payments.map(([method, amount]) => ({ method, percent: metrics.paymentTotal ? Math.round((amount / metrics.paymentTotal) * 100) : 0 }));
+  const zeroBars = orders.length ? [12, 24, 18, 32, 27, 40, 35, 48, 42, 55, 62, 70] : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
   function resetDashboard() {
     setPeriod("يومي");
@@ -47,8 +84,8 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {revenueStats.slice(0, 8).map((item) => (
-          <StatCard key={item.label} label={item.label} value="0" delta="0%" tone={item.tone as "positive" | "warning" | "danger"} />
+        {revenueStats.slice(0, 8).map((item, index) => (
+          <StatCard key={item.label} label={item.label} value={statValues[index]} delta={orders.length ? "+" : "0%"} tone={item.tone as "positive" | "warning" | "danger"} />
         ))}
       </div>
 
@@ -74,7 +111,7 @@ export default function DashboardPage() {
         <div className="rounded-[28px] border border-[#f0e0c5] bg-white p-5 shadow-[0_10px_25px_rgba(34,26,18,0.04)]">
           <h2 className="mb-4 text-xl font-black text-[#221A12]">تحليل الدفع</h2>
           <div className="space-y-4">
-            {paymentBreakdown.map((item) => (
+            {(paymentBreakdown.length ? paymentBreakdown : [{ method: "لا توجد مدفوعات", percent: 0 }]).map((item) => (
               <div key={item.method}>
                 <div className="mb-1 flex items-center justify-between text-sm text-[#4d3827]">
                   <span>{item.method}</span>
@@ -96,8 +133,8 @@ export default function DashboardPage() {
             <Link href="/products" className="rounded-full bg-[#fff4df] px-3 py-1.5 text-sm font-medium text-[#7d4e00]">إدارة المنتجات</Link>
           </div>
 
-          <div className="rounded-2xl border border-dashed border-[#e7d7b8] bg-[#fffaf4] p-8 text-center text-[#806c59]">
-            لا توجد مبيعات بعد. ابدأ من <Link href="/pos" className="font-bold text-[#F4900E]">طلب بيع جديد</Link>.
+          <div className="space-y-3">
+            {metrics.bestProducts.length ? metrics.bestProducts.map(([name, data]) => <div key={name} className="flex items-center justify-between rounded-2xl border border-[#f0e1c9] bg-[#fffaf4] p-3"><span className="font-bold">{name}</span><span>{data.quantity} قطعة · {data.revenue.toLocaleString()} ج.م</span></div>) : <div className="rounded-2xl border border-dashed border-[#e7d7b8] bg-[#fffaf4] p-8 text-center text-[#806c59]">لا توجد مبيعات بعد. ابدأ من <Link href="/pos" className="font-bold text-[#F4900E]">طلب بيع جديد</Link>.</div>}
           </div>
         </div>
 

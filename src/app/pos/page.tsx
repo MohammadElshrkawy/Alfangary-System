@@ -6,6 +6,7 @@ import { cartSeed, productCatalog } from "@/data/mock";
 import { loadProducts, Product } from "@/lib/products";
 import { loadSellers, Seller } from "@/lib/sellers";
 import { addOrUpdateCustomer } from "@/lib/customers";
+import { addOrder } from "@/lib/orders";
 
 const PaymentMethods = ["نقدي", "Vodafone Cash", "Visa", "Mastercard", "InstaPay", "تحويل بنكي", "أخرى"];
 
@@ -65,6 +66,17 @@ export default function PosPage() {
       return;
     }
     addOrUpdateCustomer(customerName.trim(), customerPhone.trim());
+    addOrder({
+      customerName: customerName.trim(),
+      customerPhone: customerPhone.trim(),
+      seller: selectedSeller,
+      paymentMethod,
+      subtotal,
+      discountPercent,
+      tax,
+      total,
+      items: cart.map((item) => ({ id: item.id, name: item.name, quantity: item.quantity, unitPrice: item.unitPrice })),
+    });
     setNotice(`تم إتمام الدفع بقيمة ${total.toFixed(2)} ج.م`);
     setCart([]);
     setReceived(0);

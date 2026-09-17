@@ -3,7 +3,7 @@
 import { startTransition, useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { cartSeed, productCatalog } from "@/data/mock";
-import { loadProducts, Product } from "@/lib/products";
+import { loadProducts, Product, updateProductStock } from "@/lib/products";
 import { loadSellers, Seller } from "@/lib/sellers";
 import { addOrUpdateCustomer } from "@/lib/customers";
 import { addOrder } from "@/lib/orders";
@@ -36,8 +36,8 @@ export default function PosPage() {
   }, [products, search]);
   const subtotal = cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
   const discountValue = (subtotal * discountPercent) / 100;
-  const tax = subtotal * 0.14;
-  const total = subtotal - discountValue + tax;
+  const tax = 0;
+  const total = subtotal - discountValue;
   const changeDue = received - total;
   const cashReady = paymentMethod === "نقدي" ? received >= total && selectedSeller : selectedSeller !== "";
 
@@ -77,6 +77,7 @@ export default function PosPage() {
       total,
       items: cart.map((item) => ({ id: item.id, name: item.name, quantity: item.quantity, unitPrice: item.unitPrice })),
     });
+    setProducts(updateProductStock(cart.map((item) => ({ id: item.id, quantity: item.quantity }))));
     setNotice(`تم إتمام الدفع بقيمة ${total.toFixed(2)} ج.م`);
     setCart([]);
     setReceived(0);
@@ -183,7 +184,6 @@ export default function PosPage() {
           <div className="space-y-2 rounded-2xl border border-[#f1dfc0] bg-[#fffdfa] p-3 text-sm text-[#4d3827]">
             <div className="flex justify-between"><span>المجموع الفرعي</span><span>{subtotal} ج.م</span></div>
             <label className="flex items-center justify-between gap-3"><span>الخصم (%)</span><input type="number" min="0" max="100" value={discountPercent} onChange={(event) => setDiscountPercent(Number(event.target.value || 0))} className="w-20 rounded-lg border border-[#e9dcc1] bg-[#fffaf4] px-2 py-1 text-center outline-none focus:border-[#F4900E]" /></label>
-            <div className="flex justify-between"><span>الضريبة (14%)</span><span>{tax.toFixed(2)} ج.م</span></div>
             <div className="mt-3 flex justify-between border-t border-[#f2e0c7] pt-3 text-lg font-black text-[#221A12]"><span>الإجمالي</span><span>{total.toFixed(2)} ج.م</span></div>
           </div>
 

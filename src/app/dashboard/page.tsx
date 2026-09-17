@@ -4,7 +4,7 @@ import Link from "next/link";
 import { startTransition, useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { revenueStats } from "@/data/mock";
-import { loadOrders, Order } from "@/lib/orders";
+import { clearOrders, loadOrders, Order } from "@/lib/orders";
 
 function StatCard({ label, value, delta, tone }: { label: string; value: string; delta: string; tone: "positive" | "warning" | "danger" }) {
   const toneMap = {
@@ -66,6 +66,9 @@ export default function DashboardPage() {
   const zeroBars = orders.length ? [12, 24, 18, 32, 27, 40, 35, 48, 42, 55, 62, 70] : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
   function resetDashboard() {
+    if (orders.length > 0 && !window.confirm("هل تريد حذف كل الطلبات وتصفير لوحة التحكم؟")) return;
+    clearOrders();
+    setOrders([]);
     setPeriod("يومي");
     setNotice("تم تصفير مؤشرات لوحة التحكم");
   }
@@ -115,10 +118,10 @@ export default function DashboardPage() {
               <div key={item.method}>
                 <div className="mb-1 flex items-center justify-between text-sm text-[#4d3827]">
                   <span>{item.method}</span>
-                  <span>0%</span>
+                  <span>{item.percent}%</span>
                 </div>
                 <div className="h-2.5 overflow-hidden rounded-full bg-[#f6eedf]">
-                  <div className="h-full rounded-full bg-gradient-to-r from-[#F4900E] to-[#c47dff]" style={{ width: "0%" }} />
+                  <div className="h-full rounded-full bg-gradient-to-r from-[#F4900E] to-[#c47dff]" style={{ width: `${item.percent}%` }} />
                 </div>
               </div>
             ))}

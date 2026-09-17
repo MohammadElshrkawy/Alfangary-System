@@ -40,6 +40,11 @@ export function saveOrders(orders: Order[]) {
   window.localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
 }
 
+export function clearOrders() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(ORDERS_STORAGE_KEY);
+}
+
 export function addOrder(order: Omit<Order, "id" | "createdAt">) {
   const nextOrder: Order = {
     ...order,

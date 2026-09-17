@@ -33,8 +33,8 @@ export const productCatalog = [
 ];
 
 export const cartSeed = [
-  { id: 1, name: "عسل المرق", quantity: 2, unitPrice: 320, discount: 0 },
-  { id: 2, name: "عسل السدر", quantity: 1, unitPrice: 440, discount: 5 },
+  { id: 1, name: "عسل المرق", quantity: 2, unitPrice: 320, discount: 0, profitPercent: 0 },
+  { id: 2, name: "عسل السدر", quantity: 1, unitPrice: 440, discount: 5, profitPercent: 0 },
 ];
 
 export const sellers = [

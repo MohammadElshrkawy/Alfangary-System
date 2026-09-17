@@ -45,7 +45,7 @@ export default function PosPage() {
     setCart((current) => {
       const existing = current.find((item) => item.id === product.id);
       if (existing) return current.map((item) => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
-      return [...current, { id: product.id, name: product.name, quantity: 1, unitPrice: product.price, discount: 0 }];
+      return [...current, { id: product.id, name: product.name, quantity: 1, unitPrice: product.price, discount: 0, profitPercent: product.profitPercent ?? 0 }];
     });
     setNotice(`تمت إضافة ${product.name} إلى السلة`);
   }
@@ -75,7 +75,7 @@ export default function PosPage() {
       discountPercent,
       tax,
       total,
-      items: cart.map((item) => ({ id: item.id, name: item.name, quantity: item.quantity, unitPrice: item.unitPrice })),
+      items: cart.map((item) => ({ id: item.id, name: item.name, quantity: item.quantity, unitPrice: item.unitPrice, profitPercent: item.profitPercent ?? 0 })),
     });
     setProducts(updateProductStock(cart.map((item) => ({ id: item.id, quantity: item.quantity }))));
     setNotice(`تم إتمام الدفع بقيمة ${total.toFixed(2)} ج.م`);

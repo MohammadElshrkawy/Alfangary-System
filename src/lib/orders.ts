@@ -3,6 +3,7 @@ export type OrderItem = {
   name: string;
   quantity: number;
   unitPrice: number;
+  profitPercent: number;
 };
 
 export type Order = {

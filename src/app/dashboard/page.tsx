@@ -36,6 +36,8 @@ export default function DashboardPage() {
   const metrics = useMemo(() => {
     const totalSales = orders.reduce((sum, order) => sum + order.total, 0);
     const totalDiscount = orders.reduce((sum, order) => sum + (order.subtotal * order.discountPercent) / 100, 0);
+    const grossProfit = orders.reduce((sum, order) => sum + order.items.reduce((itemSum, item) => itemSum + (item.unitPrice * item.quantity * (item.profitPercent ?? 0)) / 100, 0), 0);
+    const netProfit = Math.max(grossProfit - totalDiscount, 0);
     const customers = new Set(orders.map((order) => order.customerPhone)).size;
     const products = new Map<string, { quantity: number; revenue: number }>();
     const payments = new Map<string, number>();
@@ -48,13 +50,13 @@ export default function DashboardPage() {
     });
     const bestProducts = [...products.entries()].sort((a, b) => b[1].quantity - a[1].quantity).slice(0, 4);
     const paymentTotal = [...payments.values()].reduce((sum, value) => sum + value, 0);
-    return { totalSales, totalDiscount, customers, bestProducts, payments: [...payments.entries()], paymentTotal };
+    return { totalSales, totalDiscount, grossProfit, netProfit, customers, bestProducts, payments: [...payments.entries()], paymentTotal };
   }, [orders]);
 
   const statValues = [
     `${metrics.totalSales.toLocaleString()} ج.م`,
-    `${metrics.totalSales.toLocaleString()} ج.م`,
-    `${Math.max(metrics.totalSales - metrics.totalDiscount, 0).toLocaleString()} ج.م`,
+    `${metrics.grossProfit.toLocaleString()} ج.م`,
+    `${metrics.netProfit.toLocaleString()} ج.م`,
     String(orders.length),
     String(metrics.customers),
     String(metrics.bestProducts.length),
